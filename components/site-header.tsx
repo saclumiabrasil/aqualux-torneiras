@@ -175,12 +175,12 @@ export function SiteHeader() {
           {/* Rodapé do menu */}
           <div className="border-t border-border px-6 py-4">
             <a
-              href="#produtos"
+              href="#comprar"
               onClick={() => setMenuOpen(false)}
               className="flex items-center justify-center gap-2 rounded-xl bg-accent py-3 font-semibold text-accent-foreground transition-colors hover:brightness-95"
             >
               <ShoppingBag className="size-5" />
-              Ver Produtos
+              Comprar Agora
             </a>
           </div>
         </nav>
