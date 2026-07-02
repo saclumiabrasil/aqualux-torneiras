@@ -147,16 +147,23 @@ export function ProductHero() {
           </h1>
 
           {/* Bloco de preço */}
-          <div className="mt-5 rounded-2xl bg-secondary p-5">
+          <div className="mt-5 rounded-2xl border border-brand-navy/10 bg-secondary p-5 shadow-sm">
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground line-through">R$ 399,80</span>
               <span className="rounded-full bg-brand-navy-deep px-2.5 py-1 text-xs font-bold text-white">
                 63% OFF
               </span>
             </div>
-            <p className="mt-1 font-heading text-4xl font-extrabold text-brand-navy">R$ 149,21</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              à vista no Pix ou em até <span className="font-semibold text-foreground">12x de R$ 12,43</span> no cartão
+            <div className="mt-1 flex items-end gap-2">
+              <p className="font-heading text-5xl font-extrabold leading-none tracking-tight text-brand-navy sm:text-6xl">
+                R$ 149,21
+              </p>
+              <span className="mb-1.5 rounded-md bg-accent/15 px-2 py-0.5 text-xs font-bold text-accent">
+                à vista
+              </span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              no Pix ou em até <span className="font-semibold text-foreground">12x de R$ 12,43</span> no cartão
             </p>
           </div>
 
@@ -182,8 +189,8 @@ export function ProductHero() {
                       ★ MAIS VENDIDO
                     </span>
                   )}
-                  <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-secondary">
-                    <Image src={k.img || "/placeholder.svg"} alt={k.units} fill sizes="120px" className="object-cover" />
+                  <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-white">
+                    <Image src={k.img || "/placeholder.svg"} alt={k.units} fill sizes="120px" className="object-contain" />
                   </div>
                   <span className="mt-2 text-sm font-bold text-foreground">{k.units}</span>
                   <span className="text-[11px] leading-tight text-muted-foreground">{k.subtitle}</span>
@@ -215,16 +222,18 @@ export function ProductHero() {
           </div>
 
           {/* Brinde */}
-          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-dashed border-accent/50 bg-accent/5 p-4">
+          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-dashed border-emerald-400/60 bg-emerald-50 p-4">
             <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-white">
               <Image src="/images/kit-1.png" alt="Kit de adaptadores brinde" fill sizes="56px" className="object-contain" />
             </div>
             <div>
-              <p className="flex items-center gap-1.5 text-sm font-bold text-accent">
+              <p className="flex items-center gap-1.5 text-sm font-bold text-emerald-600">
                 <Gift className="size-4" /> BRINDE GRÁTIS
               </p>
               <p className="text-sm font-semibold text-foreground">Kit de adaptadores + bico aerador</p>
-              <p className="text-xs text-muted-foreground">Incluso no seu pedido hoje</p>
+              <p className="text-xs text-muted-foreground">
+                Incluso <span className="font-semibold text-emerald-600">no</span> seu pedido hoje
+              </p>
             </div>
           </div>
 

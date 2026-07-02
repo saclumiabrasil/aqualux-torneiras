@@ -1,12 +1,5 @@
-import Image from "next/image"
 import { Star, BadgeCheck, Flame, ShieldCheck, Truck } from "lucide-react"
-
-const photos = [
-  { src: "/images/review-1.png", alt: "Foto de cliente: aquecedor instalado na torneira da cozinha" },
-  { src: "/images/review-2.png", alt: "Foto de cliente: aquecedor instalado no banheiro" },
-  { src: "/images/review-3.png", alt: "Foto de cliente: aquecedor recém-chegado na embalagem" },
-  { src: "/images/review-4.png", alt: "Foto de cliente: aquecedor em uso com água corrente" },
-]
+import { ReviewPhotosCarousel } from "@/components/review-photos-carousel"
 
 const reviews = [
   {
@@ -63,14 +56,8 @@ export function Reviews() {
           </p>
         </div>
 
-        {/* Fotos */}
-        <div className="mt-6 flex gap-3 overflow-x-auto pb-2">
-          {photos.map((p) => (
-            <div key={p.src} className="relative size-40 shrink-0 overflow-hidden rounded-xl bg-background">
-              <Image src={p.src || "/placeholder.svg"} alt={p.alt} fill sizes="160px" className="object-cover" />
-            </div>
-          ))}
-        </div>
+        {/* Fotos em carrossel automático */}
+        <ReviewPhotosCarousel />
 
         {/* Avaliações */}
         <div className="mt-6 space-y-3">

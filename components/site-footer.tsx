@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Logo } from "@/components/logo"
 import { PaymentMethods } from "@/components/payment-methods"
 import { Mail, Phone, Clock, Truck } from "lucide-react"
@@ -5,11 +6,20 @@ import { Mail, Phone, Clock, Truck } from "lucide-react"
 const columns = [
   {
     title: "Políticas",
-    links: ["Política de Frete", "Pagamento Seguro", "Termos de Uso", "Trocas e Reembolso"],
+    links: [
+      { label: "Política de Frete", href: "/politica-de-frete" },
+      { label: "Pagamento Seguro", href: "/pagamento-seguro" },
+      { label: "Termos de Uso", href: "/termos-de-uso" },
+      { label: "Trocas e Reembolso", href: "/trocas-e-reembolso" },
+    ],
   },
   {
     title: "Institucional",
-    links: ["Quem Somos", "Dúvidas Frequentes", "Política de Privacidade"],
+    links: [
+      { label: "Quem Somos", href: "/quem-somos" },
+      { label: "Dúvidas Frequentes", href: "/duvidas-frequentes" },
+      { label: "Política de Privacidade", href: "/politica-de-privacidade" },
+    ],
   },
 ]
 
@@ -34,12 +44,12 @@ export function SiteFooter() {
           </li>
         </ul>
 
-        <a
-          href="#rastreio"
+        <Link
+          href="/rastrear-pedido"
           className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-white/10 py-3.5 text-sm font-medium transition-colors hover:bg-white/15"
         >
           <Truck className="size-4" /> Rastrear Pedido
-        </a>
+        </Link>
 
         {/* Colunas de links */}
         <div className="mt-10 grid grid-cols-2 gap-8">
@@ -48,10 +58,13 @@ export function SiteFooter() {
               <h4 className="font-heading text-sm font-bold uppercase tracking-wide">{col.title}</h4>
               <ul className="mt-4 flex flex-col gap-3">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-primary-foreground/70 transition-colors hover:text-primary-foreground">
-                      {link}
-                    </a>
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-primary-foreground/70 transition-colors hover:text-primary-foreground"
+                    >
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>

@@ -15,21 +15,21 @@ import { Logo } from "@/components/logo"
 import { cn } from "@/lib/utils"
 
 const mainLinks = [
-  { label: "Início", href: "#inicio", icon: Home },
-  { label: "Rastrear Pedido", href: "#rastreio", icon: Truck },
+  { label: "Início", href: "/#inicio", icon: Home },
+  { label: "Rastrear Pedido", href: "/rastrear-pedido", icon: Truck },
 ]
 
 const policyLinks = [
-  { label: "Política de Frete", href: "#frete" },
-  { label: "Pagamento Seguro", href: "#pagamento" },
-  { label: "Termos de Uso", href: "#termos" },
-  { label: "Trocas e Reembolso", href: "#trocas" },
+  { label: "Política de Frete", href: "/politica-de-frete" },
+  { label: "Pagamento Seguro", href: "/pagamento-seguro" },
+  { label: "Termos de Uso", href: "/termos-de-uso" },
+  { label: "Trocas e Reembolso", href: "/trocas-e-reembolso" },
 ]
 
 const institutionalLinks = [
-  { label: "Quem Somos", href: "#quem-somos" },
-  { label: "Dúvidas Frequentes", href: "#faq" },
-  { label: "Política de Privacidade", href: "#privacidade" },
+  { label: "Quem Somos", href: "/quem-somos" },
+  { label: "Dúvidas Frequentes", href: "/duvidas-frequentes" },
+  { label: "Política de Privacidade", href: "/politica-de-privacidade" },
 ]
 
 export function SiteHeader() {
@@ -71,7 +71,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-1">
             <a
-              href="#rastreio"
+              href="/rastrear-pedido"
               className="inline-flex size-10 items-center justify-center rounded-md text-primary transition-colors hover:bg-secondary"
               aria-label="Rastrear pedido"
             >
