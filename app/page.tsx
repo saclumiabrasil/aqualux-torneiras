@@ -3,6 +3,7 @@ import { ProductHero } from "@/components/product-hero"
 import { FeatureBanners } from "@/components/feature-banners"
 import { HotCold } from "@/components/hot-cold"
 import { Installation } from "@/components/installation"
+import { Compatibility } from "@/components/compatibility"
 import { ProductInfo } from "@/components/product-info"
 import { Comparison } from "@/components/comparison"
 import { OfferCountdown } from "@/components/offer-countdown"
@@ -22,6 +23,7 @@ export default function Page() {
         <FeatureBanners />
         <HotCold />
         <Installation />
+        <Compatibility />
         <ProductInfo />
         <Comparison />
         <OfferCountdown />

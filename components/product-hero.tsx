@@ -15,12 +15,12 @@ import {
 import { cn } from "@/lib/utils"
 
 const gallery = [
-  { src: "/images/heater-hero.png", alt: "AquaLux Digital instalado na torneira com display marcando 45 graus" },
-  { src: "/images/heater-kitchen.png", alt: "Aquecedor AquaLux com água quente saindo na pia da cozinha" },
-  { src: "/images/heater-white.png", alt: "Aquecedor AquaLux Digital em fundo branco" },
-  { src: "/images/heater-hand.png", alt: "Mão segurando o aquecedor AquaLux Digital" },
-  { src: "/images/heater-install.png", alt: "Detalhe da instalação do AquaLux na torneira" },
-  { src: "/images/heater-banner.png", alt: "Aquecedor AquaLux com efeito de água" },
+  { src: "/images/hero-produto-real.png", alt: "AquaLux Digital instalado na torneira com display marcando 45 graus" },
+  { src: "/images/banner-aquecimento.png", alt: "Aquecedor AquaLux com água quente saindo na pia da cozinha" },
+  { src: "/images/banner-instalacao-simples.png", alt: "Aquecedor AquaLux Digital em destaque de instalação" },
+  { src: "/images/banner-agua-quente-fria.png", alt: "AquaLux Digital com seletor de água quente e fria" },
+  { src: "/images/banner-instalacao-facil.png", alt: "Passo a passo de instalação do AquaLux Digital" },
+  { src: "/images/banner-compativel.png", alt: "Torneiras compatíveis com o AquaLux Digital" },
 ]
 
 const kits = [
@@ -31,7 +31,7 @@ const kits = [
     old: "R$ 199,90",
     price: "R$ 97,14",
     off: "-51%",
-    img: "/images/heater-white.png",
+    img: "/images/kit-1.png",
   },
   {
     id: "2un",
@@ -40,7 +40,7 @@ const kits = [
     old: "R$ 399,80",
     price: "R$ 149,21",
     off: "-63%",
-    img: "/images/heater-kit2.png",
+    img: "/images/kit-2.png",
     bestSeller: true,
   },
   {
@@ -50,7 +50,7 @@ const kits = [
     old: "R$ 599,70",
     price: "R$ 195,90",
     off: "-67%",
-    img: "/images/heater-kit3.png",
+    img: "/images/kit-3.png",
   },
 ]
 
@@ -74,14 +74,14 @@ export function ProductHero() {
       <div className="mx-auto max-w-6xl px-4 py-6 lg:grid lg:grid-cols-2 lg:gap-10 lg:py-10">
         {/* Galeria */}
         <div>
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-secondary">
+          <div className="relative aspect-square overflow-hidden rounded-2xl bg-white">
             <Image
               src={gallery[active].src || "/placeholder.svg"}
               alt={gallery[active].alt}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              className="object-contain"
             />
             <button
               type="button"
@@ -120,11 +120,11 @@ export function ProductHero() {
                 onClick={() => setActive(i)}
                 aria-label={`Ver imagem ${i + 1}`}
                 className={cn(
-                  "relative aspect-square overflow-hidden rounded-lg border-2 bg-secondary transition",
+                  "relative aspect-square overflow-hidden rounded-lg border-2 bg-white transition",
                   i === active ? "border-accent" : "border-transparent hover:border-border",
                 )}
               >
-                <Image src={img.src || "/placeholder.svg"} alt="" fill sizes="80px" className="object-cover" />
+                <Image src={img.src || "/placeholder.svg"} alt="" fill sizes="80px" className="object-contain" />
               </button>
             ))}
           </div>
@@ -216,8 +216,8 @@ export function ProductHero() {
 
           {/* Brinde */}
           <div className="mt-4 flex items-center gap-3 rounded-2xl border border-dashed border-accent/50 bg-accent/5 p-4">
-            <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-secondary">
-              <Image src="/images/heater-install.png" alt="Kit de adaptadores brinde" fill sizes="56px" className="object-cover" />
+            <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-white">
+              <Image src="/images/kit-1.png" alt="Kit de adaptadores brinde" fill sizes="56px" className="object-contain" />
             </div>
             <div>
               <p className="flex items-center gap-1.5 text-sm font-bold text-accent">

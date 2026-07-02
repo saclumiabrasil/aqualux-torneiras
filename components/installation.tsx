@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Wrench, Settings, Droplet, Thermometer, Zap } from "lucide-react"
 
 const steps = [
@@ -26,7 +27,18 @@ const steps = [
 export function Installation() {
   return (
     <section className="bg-background py-8">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto max-w-3xl space-y-6 px-4">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          <Image
+            src="/images/banner-instalacao-facil.png"
+            alt="Instalação fácil em poucos passos: desparafuse a saída, coloque a porca prateada, trave o encaixe e coloque o aquecedor"
+            width={512}
+            height={464}
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="h-auto w-full"
+          />
+        </div>
+
         <div className="rounded-2xl bg-card p-6 shadow-sm sm:p-8">
           <div className="text-center">
             <h2 className="flex items-center justify-center gap-2 font-heading text-2xl font-bold text-foreground">
