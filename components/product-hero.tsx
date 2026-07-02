@@ -252,6 +252,18 @@ export function ProductHero() {
             <TrustBadge icon={Truck} label="Frete grátis" />
             <TrustBadge icon={Clock} label="Garantia 30 dias" />
           </div>
+
+          {/* Bandeiras aceitas em uma única linha */}
+          <div className="mt-4 flex justify-center">
+            <Image
+              src="/images/cards-strip-source.png"
+              alt="Formas de pagamento aceitas: Pix, Visa, Mastercard, Elo, American Express, Hipercard, Discover e Diners Club"
+              width={336}
+              height={42}
+              sizes="(max-width: 480px) 80vw, 300px"
+              className="h-auto w-full max-w-[300px]"
+            />
+          </div>
         </div>
       </div>
     </section>
