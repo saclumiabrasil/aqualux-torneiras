@@ -110,7 +110,7 @@ export function Reviews() {
 
         {/* CTA */}
         <a
-          href="#oferta-final"
+          href="#escolha-kit"
           className="mt-6 flex items-center justify-center rounded-xl bg-brand-navy py-4 font-heading text-lg font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
         >
           APROVEITAR OFERTA

@@ -34,7 +34,7 @@ export function OfferCountdown() {
             Estoque limitado — depois volta a <span className="font-semibold">R$ 199,90</span>
           </p>
           <a
-            href="#oferta-final"
+            href="#escolha-kit"
             className="mt-4 flex items-center justify-center rounded-xl bg-brand-navy py-4 font-heading text-base font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
           >
             QUERO COM DESCONTO
