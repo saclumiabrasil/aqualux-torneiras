@@ -13,7 +13,8 @@ import {
   Clock,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { openCheckout, type KitId } from "@/lib/checkout"
+import { openCheckout, formatBRL, KITS } from "@/lib/checkout"
+import { useKit } from "@/components/kit-provider"
 
 const gallery = [
   { src: "/images/hero-produto-real.png", alt: "AquaLux Digital instalado na torneira com display marcando 45 graus" },
@@ -22,37 +23,6 @@ const gallery = [
   { src: "/images/banner-agua-quente-fria.png", alt: "AquaLux Digital com seletor de água quente e fria" },
   { src: "/images/banner-instalacao-facil.png", alt: "Passo a passo de instalação do AquaLux Digital" },
   { src: "/images/banner-compativel.png", alt: "Torneiras compatíveis com o AquaLux Digital" },
-]
-
-const kits = [
-  {
-    id: "1un",
-    units: "1 unidade",
-    subtitle: "Para uso individual",
-    old: "R$ 199,90",
-    price: "R$ 97,14",
-    off: "-51%",
-    img: "/images/kit-1.png",
-  },
-  {
-    id: "2un",
-    units: "2 unidades",
-    subtitle: "Ideal para casa toda",
-    old: "R$ 399,80",
-    price: "R$ 149,21",
-    off: "-63%",
-    img: "/images/kit-2.png",
-    bestSeller: true,
-  },
-  {
-    id: "3un",
-    units: "3 unidades",
-    subtitle: "Melhor custo-benefício",
-    old: "R$ 599,70",
-    price: "R$ 195,90",
-    off: "-67%",
-    img: "/images/kit-3.png",
-  },
 ]
 
 const benefits = [
@@ -64,7 +34,8 @@ const benefits = [
 
 export function ProductHero() {
   const [active, setActive] = useState(0)
-  const [kit, setKit] = useState("2un")
+  const { kitId, setKitId, kit } = useKit()
+  const installment = formatBRL(kit.priceValue / 12)
 
   const total = gallery.length
   const prev = () => setActive((i) => (i - 1 + total) % total)
@@ -150,21 +121,21 @@ export function ProductHero() {
           {/* Bloco de preço */}
           <div className="mt-5 rounded-2xl border border-brand-navy/10 bg-secondary p-5 shadow-sm">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground line-through">R$ 399,80</span>
+              <span className="text-sm text-muted-foreground line-through">{kit.old}</span>
               <span className="rounded-full bg-brand-navy-deep px-2.5 py-1 text-xs font-bold text-white">
-                63% OFF
+                {kit.off} OFF
               </span>
             </div>
             <div className="mt-1 flex items-end gap-2">
               <p className="font-heading text-5xl font-extrabold leading-none tracking-tight text-brand-navy sm:text-6xl">
-                R$ 149,21
+                {kit.price}
               </p>
               <span className="mb-1.5 rounded-md bg-accent/15 px-2 py-0.5 text-xs font-bold text-accent">
                 à vista
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              no Pix ou em até <span className="font-semibold text-foreground">12x de R$ 12,43</span> no cartão
+              no Pix ou em até <span className="font-semibold text-foreground">12x de R$ {installment}</span> no cartão
             </p>
           </div>
 
@@ -175,14 +146,14 @@ export function ProductHero() {
               <span className="text-xs text-muted-foreground">3 opções</span>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2.5">
-              {kits.map((k) => (
+              {KITS.map((k) => (
                 <button
                   key={k.id}
                   type="button"
-                  onClick={() => setKit(k.id)}
+                  onClick={() => setKitId(k.id)}
                   className={cn(
                     "relative flex flex-col rounded-xl border-2 bg-background p-2 text-left transition",
-                    kit === k.id ? "border-brand-navy" : "border-border hover:border-brand-navy/40",
+                    kitId === k.id ? "border-brand-navy" : "border-border hover:border-brand-navy/40",
                   )}
                 >
                   {k.bestSeller && (
@@ -197,7 +168,7 @@ export function ProductHero() {
                   <span className="text-[11px] leading-tight text-muted-foreground">{k.subtitle}</span>
                   <span className="mt-1 flex items-center gap-1">
                     <span className="text-[11px] text-muted-foreground line-through">{k.old}</span>
-                    <span className="rounded bg-brand-navy px-1 text-[10px] font-bold text-white">{k.off}</span>
+                    <span className="rounded bg-brand-navy px-1 text-[10px] font-bold text-white">-{k.off}</span>
                   </span>
                   <span className="text-sm font-bold text-brand-navy">{k.price}</span>
                 </button>
@@ -242,7 +213,7 @@ export function ProductHero() {
           <button
             id="comprar"
             type="button"
-            onClick={() => openCheckout(kit as KitId)}
+            onClick={() => openCheckout(kitId)}
             className="mt-5 flex w-full scroll-mt-24 items-center justify-center rounded-xl bg-brand-navy py-4 font-heading text-lg font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
           >
             COMPRAR AGORA

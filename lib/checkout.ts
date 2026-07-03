@@ -10,6 +10,62 @@ const PRODUCT_IDS: Record<KitId, string> = {
   "3un": "3394182432433",
 }
 
+export type Kit = {
+  id: KitId
+  units: string
+  subtitle: string
+  old: string
+  price: string
+  priceValue: number
+  off: string
+  img: string
+  bestSeller?: boolean
+}
+
+// Catálogo de kits compartilhado entre o seletor (ProductHero),
+// o bloco de preço e a barra fixa (StickyBuyBar).
+export const KITS: Kit[] = [
+  {
+    id: "1un",
+    units: "1 unidade",
+    subtitle: "Para uso individual",
+    old: "R$ 199,90",
+    price: "R$ 97,14",
+    priceValue: 97.14,
+    off: "51%",
+    img: "/images/kit-1.png",
+  },
+  {
+    id: "2un",
+    units: "2 unidades",
+    subtitle: "Ideal para casa toda",
+    old: "R$ 399,80",
+    price: "R$ 149,21",
+    priceValue: 149.21,
+    off: "63%",
+    img: "/images/kit-2.png",
+    bestSeller: true,
+  },
+  {
+    id: "3un",
+    units: "3 unidades",
+    subtitle: "Melhor custo-benefício",
+    old: "R$ 599,70",
+    price: "R$ 195,90",
+    priceValue: 195.9,
+    off: "67%",
+    img: "/images/kit-3.png",
+  },
+]
+
+export function getKit(kit: KitId): Kit {
+  return KITS.find((k) => k.id === kit) ?? KITS[1]
+}
+
+export function formatBRL(value: number): string {
+  return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 const STORE_ID = "33941"
 
 export function getCheckoutUrl(kit: KitId): string {

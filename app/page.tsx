@@ -12,26 +12,29 @@ import { Reviews } from "@/components/reviews"
 import { Faq } from "@/components/faq"
 import { SiteFooter } from "@/components/site-footer"
 import { StickyBuyBar } from "@/components/sticky-buy-bar"
+import { KitProvider } from "@/components/kit-provider"
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <SiteHeader />
-      <main>
-        <ProductHero />
-        <FeatureBanners />
-        <HotCold />
-        <Installation />
-        <Compatibility />
-        <ProductInfo />
-        <Comparison />
-        <OfferCountdown />
-        <UseCases />
-        <Reviews />
-        <Faq />
-      </main>
-      <SiteFooter />
-      <StickyBuyBar />
-    </div>
+    <KitProvider>
+      <div className="min-h-screen bg-background pb-20">
+        <SiteHeader />
+        <main>
+          <ProductHero />
+          <FeatureBanners />
+          <HotCold />
+          <Installation />
+          <Compatibility />
+          <ProductInfo />
+          <Comparison />
+          <OfferCountdown />
+          <UseCases />
+          <Reviews />
+          <Faq />
+        </main>
+        <SiteFooter />
+        <StickyBuyBar />
+      </div>
+    </KitProvider>
   )
 }
