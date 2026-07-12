@@ -53,6 +53,7 @@ export function CheckoutClient() {
 
   const [step, setStep] = useState<Step>(0)
   const [submitted, setSubmitted] = useState(false)
+  const [finalTotal, setFinalTotal] = useState(0)
 
   // Identificação
   const [nome, setNome] = useState("")
@@ -81,17 +82,17 @@ export function CheckoutClient() {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  // Cupom
+  const [couponInput, setCouponInput] = useState("")
+  const [couponCodeApplied, setCouponCodeApplied] = useState("")
+  const [couponError, setCouponError] = useState("")
+
   const shipping = getShipping(frete)
   const coupon = getCoupon(couponCodeApplied)
   const couponDiscount = coupon ? subtotal * coupon.percent : 0
   const pixDiscount = payment === "pix" ? subtotal * 0.1 : 0
   const total = Math.max(0, subtotal - couponDiscount - pixDiscount + shipping.price)
   const installmentValue = total / 12
-
-  // Cupom
-  const [couponInput, setCouponInput] = useState("")
-  const [couponCodeApplied, setCouponCodeApplied] = useState("")
-  const [couponError, setCouponError] = useState("")
 
   function applyCoupon() {
     const found = getCoupon(couponInput)
@@ -164,6 +165,7 @@ export function CheckoutClient() {
 
   function finalize() {
     if (!validateStep(2)) return
+    setFinalTotal(total)
     setSubmitted(true)
     clear()
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -171,7 +173,7 @@ export function CheckoutClient() {
 
   // Pedido concluído
   if (submitted) {
-    return <OrderConfirmation nome={nome} email={email} payment={payment} total={total} />
+    return <OrderConfirmation nome={nome} email={email} payment={payment} total={finalTotal} />
   }
 
   // Aguardando hidratação do carrinho
@@ -839,19 +841,24 @@ function OrderConfirmation({
             foi registrado com sucesso.
           </p>
 
-          <div className="mt-5 rounded-xl bg-secondary p-4 text-left text-sm">
+          <div className="mt-5 flex items-start gap-3 rounded-xl bg-secondary p-4 text-left text-sm">
             {payment === "pix" ? (
-              <p className="flex items-start gap-2 text-foreground/90">
+              <>
                 <QrCode className="mt-0.5 size-5 shrink-0 text-brand-navy" />
-                Enviamos o QR Code Pix e os detalhes do pagamento para <span className="font-semibold">{email}</span>.
-                Após a confirmação, seu pedido é enviado imediatamente.
-              </p>
+                <p className="text-foreground/90">
+                  Enviamos o QR Code Pix e os detalhes do pagamento para{" "}
+                  <span className="font-semibold break-words">{email}</span>. Após a confirmação, seu pedido é enviado
+                  imediatamente.
+                </p>
+              </>
             ) : (
-              <p className="flex items-start gap-2 text-foreground/90">
+              <>
                 <CreditCard className="mt-0.5 size-5 shrink-0 text-brand-navy" />
-                Pagamento no cartão aprovado. Os detalhes do pedido foram enviados para{" "}
-                <span className="font-semibold">{email}</span>.
-              </p>
+                <p className="text-foreground/90">
+                  Pagamento no cartão aprovado. Os detalhes do pedido foram enviados para{" "}
+                  <span className="font-semibold break-words">{email}</span>.
+                </p>
+              </>
             )}
           </div>
 
