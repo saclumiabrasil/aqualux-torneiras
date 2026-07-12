@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, type ReactNode } from "react"
+import { useRef, useState, type ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -20,6 +20,8 @@ import {
   ShieldCheck,
   CircleCheck,
   ShoppingBag,
+  Star,
+  BadgeCheck,
 } from "lucide-react"
 import { useCart } from "@/components/cart-provider"
 import { Logo } from "@/components/logo"
@@ -226,7 +228,7 @@ export function CheckoutClient() {
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-foreground">AquaLux Digital</p>
+                  <p className="text-sm font-bold leading-tight text-foreground">Aquecedor AquaLux Digital</p>
                   <p className="text-xs text-muted-foreground">{line.kit.units}</p>
                 </div>
                 <div className="flex items-center rounded-lg border border-border">
@@ -300,7 +302,7 @@ export function CheckoutClient() {
             )}
             {pixDiscount > 0 && (
               <div className="flex justify-between">
-                <dt className="text-emerald-600">Desconto Pix (10%)</dt>
+                <dt className="text-emerald-600">Desconto</dt>
                 <dd className="text-emerald-600">- R$ {formatBRL(pixDiscount)}</dd>
               </div>
             )}
@@ -650,23 +652,12 @@ export function CheckoutClient() {
           )}
         </section>
 
-        {/* Selos de confiança */}
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <TrustCard icon={ShieldCheck} title="Compra 100% segura" text="Seus dados são protegidos e criptografados." />
-          <TrustCard icon={Truck} title="Frete grátis" text="Enviamos para todo o Brasil sem custo extra." />
-        </div>
-
-        {/* Formas de pagamento */}
-        <div className="mt-6 text-center">
-          <p className="text-sm font-semibold text-foreground">Formas de pagamento</p>
-          <div className="mt-3">
-            <PaymentMethods variant="badges" />
-          </div>
-          <p className="mt-6 text-xs text-muted-foreground">
-            AquaLux Ltda | Todos os direitos reservados
-          </p>
-        </div>
+        {/* Carrossel de confiança */}
+        <TrustCarousel />
       </div>
+
+      {/* Rodapé */}
+      <CheckoutFooter />
     </div>
   )
 }
@@ -716,8 +707,8 @@ function Stepper({ step }: { step: Step }) {
               <span
                 className={cn(
                   "flex size-10 items-center justify-center rounded-full border-2 transition",
-                  done && "border-emerald-500 bg-emerald-500 text-white",
-                  active && "border-accent bg-accent text-accent-foreground",
+                  done && "border-brand-navy bg-brand-navy text-white",
+                  active && "border-brand-sky bg-brand-sky text-white",
                   !done && !active && "border-border bg-background text-muted-foreground",
                 )}
               >
@@ -733,7 +724,7 @@ function Stepper({ step }: { step: Step }) {
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <span className={cn("mx-1 -mt-5 h-0.5 flex-1 rounded", done ? "bg-emerald-500" : "bg-border")} />
+              <span className={cn("mx-1 -mt-5 h-0.5 flex-1 rounded", done ? "bg-brand-navy" : "bg-border")} />
             )}
           </div>
         )
@@ -797,21 +788,162 @@ function BackButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-function TrustCard({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: typeof ShieldCheck
-  title: string
-  text: string
-}) {
+type Slide =
+  | {
+      kind: "review"
+      name: string
+      avatar: string
+      text: string
+    }
+  | {
+      kind: "trust"
+      icon: typeof ShieldCheck
+      title: string
+      text: string
+    }
+
+const SLIDES: Slide[] = [
+  {
+    kind: "review",
+    name: "Marcos A.",
+    avatar: "/images/reviews/marcos.png",
+    text: "Instalei em menos de 5 minutos, sem ferramentas. A água sai quente quase imediato e o display digital é muito útil.",
+  },
+  {
+    kind: "review",
+    name: "Fernanda C.",
+    avatar: "/images/reviews/fernanda.png",
+    text: "Resolveu o problema da minha cozinha que não tinha água quente. Qualidade excelente, recomendo demais!",
+  },
+  {
+    kind: "trust",
+    icon: Truck,
+    title: "Correios",
+    text: "Trabalhamos com os Correios há mais de 5 anos, garantindo entregas rápidas e seguras para todo o Brasil.",
+  },
+  {
+    kind: "trust",
+    icon: ShieldCheck,
+    title: "Devolução Fácil",
+    text: "30 dias para troca ou devolução, de forma simples, rápida e sem burocracia.",
+  },
+]
+
+function Stars() {
   return (
-    <div className="rounded-2xl bg-card p-4 shadow-sm">
-      <Icon className="size-6 text-brand-navy" />
-      <p className="mt-2 text-sm font-bold text-foreground">{title}</p>
-      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{text}</p>
+    <div className="flex gap-0.5 text-amber-400">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className="size-3.5 fill-current" />
+      ))}
     </div>
+  )
+}
+
+function TrustCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(0)
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const center = el.scrollLeft + el.clientWidth / 2
+    const children = Array.from(el.children) as HTMLElement[]
+    let idx = 0
+    let best = Number.POSITIVE_INFINITY
+    children.forEach((c, i) => {
+      const cc = c.offsetLeft + c.offsetWidth / 2
+      const d = Math.abs(cc - center)
+      if (d < best) {
+        best = d
+        idx = i
+      }
+    })
+    setActive(idx)
+  }
+
+  function goTo(i: number) {
+    const el = scrollRef.current
+    if (!el) return
+    const child = el.children[i] as HTMLElement | undefined
+    if (child) el.scrollTo({ left: child.offsetLeft, behavior: "smooth" })
+  }
+
+  return (
+    <div className="mt-6">
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {SLIDES.map((slide, i) => (
+          <article
+            key={i}
+            className="flex min-w-[82%] snap-start flex-col rounded-2xl bg-card p-4 shadow-sm"
+          >
+            {slide.kind === "review" ? (
+              <>
+                <div className="flex items-center gap-3">
+                  <div className="relative size-10 shrink-0 overflow-hidden rounded-full bg-secondary">
+                    <Image src={slide.avatar || "/placeholder.svg"} alt={slide.name} fill sizes="40px" className="object-cover" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-1 text-sm font-bold text-foreground">
+                      {slide.name}
+                      <BadgeCheck className="size-4 text-brand-sky" />
+                    </p>
+                    <Stars />
+                  </div>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/90">{slide.text}</p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <Stars />
+                  <slide.icon className="size-6 text-brand-navy" />
+                </div>
+                <p className="mt-3 text-sm font-bold text-foreground">{slide.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{slide.text}</p>
+              </>
+            )}
+          </article>
+        ))}
+      </div>
+      <div className="mt-3 flex justify-center gap-1.5">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`Ir para o slide ${i + 1}`}
+            className={cn(
+              "h-1.5 rounded-full transition-all",
+              i === active ? "w-5 bg-accent" : "w-1.5 bg-border",
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function CheckoutFooter() {
+  return (
+    <footer className="mt-8 bg-brand-navy-deep">
+      <div className="mx-auto max-w-md px-4 py-8 text-center">
+        <p className="font-heading text-sm font-bold text-white">Formas de pagamento</p>
+        <div className="mt-4">
+          <PaymentMethods variant="badges" />
+        </div>
+        <Link
+          href="/"
+          className="mt-6 inline-block text-sm font-semibold text-white underline underline-offset-4"
+        >
+          Informações da loja
+        </Link>
+        <p className="mt-3 text-xs text-white/60">AquaLux Ltda | Todos os direitos reservados</p>
+      </div>
+    </footer>
   )
 }
 
