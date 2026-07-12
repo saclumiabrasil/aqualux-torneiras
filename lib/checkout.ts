@@ -15,6 +15,7 @@ export type Kit = {
   units: string
   subtitle: string
   old: string
+  oldValue: number
   price: string
   priceValue: number
   off: string
@@ -30,6 +31,7 @@ export const KITS: Kit[] = [
     units: "1 unidade",
     subtitle: "Para uso individual",
     old: "R$ 199,90",
+    oldValue: 199.9,
     price: "R$ 97,14",
     priceValue: 97.14,
     off: "51%",
@@ -40,6 +42,7 @@ export const KITS: Kit[] = [
     units: "2 unidades",
     subtitle: "Ideal para casa toda",
     old: "R$ 399,80",
+    oldValue: 399.8,
     price: "R$ 149,21",
     priceValue: 149.21,
     off: "63%",
@@ -51,6 +54,7 @@ export const KITS: Kit[] = [
     units: "3 unidades",
     subtitle: "Melhor custo-benefício",
     old: "R$ 599,70",
+    oldValue: 599.7,
     price: "R$ 195,90",
     priceValue: 195.9,
     off: "67%",

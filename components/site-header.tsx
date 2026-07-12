@@ -9,9 +9,11 @@ import {
   Home,
   ChevronRight,
   ShoppingBag,
+  ShoppingCart,
   Zap,
 } from "lucide-react"
 import { Logo } from "@/components/logo"
+import { useCart } from "@/components/cart-provider"
 import { cn } from "@/lib/utils"
 
 const mainLinks = [
@@ -35,6 +37,7 @@ const institutionalLinks = [
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const { count, openCart } = useCart()
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : ""
@@ -84,6 +87,19 @@ export function SiteHeader() {
               aria-label="Buscar produtos"
             >
               <Search className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={openCart}
+              className="relative inline-flex size-10 items-center justify-center rounded-md text-primary transition-colors hover:bg-secondary"
+              aria-label={`Abrir carrinho${count > 0 ? ` com ${count} item(ns)` : ""}`}
+            >
+              <ShoppingCart className="size-5" />
+              {count > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold leading-5 text-accent-foreground">
+                  {count}
+                </span>
+              )}
             </button>
           </div>
         </div>

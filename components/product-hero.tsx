@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import {
   Star,
   ChevronLeft,
@@ -11,10 +12,12 @@ import {
   ShieldCheck,
   Truck,
   Clock,
+  ShoppingCart,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { openCheckout, formatBRL, KITS } from "@/lib/checkout"
+import { formatBRL, KITS } from "@/lib/checkout"
 import { useKit } from "@/components/kit-provider"
+import { useCart } from "@/components/cart-provider"
 
 const gallery = [
   { src: "/images/hero-produto-real.png", alt: "AquaLux Digital instalado na torneira com display marcando 45 graus" },
@@ -35,7 +38,14 @@ const benefits = [
 export function ProductHero() {
   const [active, setActive] = useState(0)
   const { kitId, setKitId, kit } = useKit()
+  const { addItem } = useCart()
+  const router = useRouter()
   const installment = formatBRL(kit.priceValue / 12)
+
+  const buyNow = () => {
+    addItem(kitId)
+    router.push("/checkout")
+  }
 
   const total = gallery.length
   const prev = () => setActive((i) => (i - 1 + total) % total)
@@ -213,10 +223,18 @@ export function ProductHero() {
           <button
             id="comprar"
             type="button"
-            onClick={() => openCheckout(kitId)}
+            onClick={buyNow}
             className="mt-5 flex w-full scroll-mt-24 items-center justify-center rounded-xl bg-brand-navy py-4 font-heading text-lg font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
           >
             COMPRAR AGORA
+          </button>
+          <button
+            type="button"
+            onClick={() => addItem(kitId)}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-navy bg-background py-3.5 font-heading text-base font-bold text-brand-navy transition hover:bg-secondary"
+          >
+            <ShoppingCart className="size-5" />
+            Adicionar ao Carrinho
           </button>
 
           {/* Selos */}
