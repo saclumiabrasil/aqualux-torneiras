@@ -1,13 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { openCheckout } from "@/lib/checkout"
 import { useKit } from "@/components/kit-provider"
+import { useCart } from "@/components/cart-provider"
 
 export function StickyBuyBar() {
   const [visible, setVisible] = useState(false)
   const { kitId, kit } = useKit()
+  const { addItem } = useCart()
+  const router = useRouter()
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 500)
@@ -15,6 +18,11 @@ export function StickyBuyBar() {
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
+
+  const buyNow = () => {
+    addItem(kitId)
+    router.push("/checkout")
+  }
 
   return (
     <div
@@ -33,7 +41,7 @@ export function StickyBuyBar() {
         </div>
         <button
           type="button"
-          onClick={() => openCheckout(kitId)}
+          onClick={buyNow}
           className="flex flex-1 items-center justify-center rounded-xl bg-brand-navy px-6 py-3.5 font-heading text-base font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110 sm:flex-none"
         >
           QUERO O MEU
