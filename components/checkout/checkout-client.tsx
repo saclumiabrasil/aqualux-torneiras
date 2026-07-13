@@ -209,12 +209,12 @@ export function CheckoutClient() {
       <CheckoutHeader />
 
       {/* Banner promocional */}
-      <div className="bg-brand-navy-deep px-4 py-2.5 text-center">
-        <p className="flex items-center justify-center gap-2 text-sm font-semibold text-white">
-          <Truck className="size-4 shrink-0 text-emerald-400" />
-          <span>
-            Você ganhou <span className="font-bold text-emerald-400">FRETE GRÁTIS</span> + Brinde exclusivo hoje!
-          </span>
+      <div className="flex items-center justify-center gap-2.5 bg-brand-navy-deep px-4 py-3">
+        <span className="shrink-0 text-lg leading-none" aria-hidden="true">
+          🚚
+        </span>
+        <p className="text-center text-sm font-semibold leading-snug text-white text-balance">
+          Você ganhou <span className="font-bold text-emerald-400">FRETE GRÁTIS</span> + Brinde exclusivo hoje!
         </p>
       </div>
 
