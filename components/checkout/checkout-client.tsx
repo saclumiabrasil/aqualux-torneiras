@@ -228,7 +228,7 @@ export function CheckoutClient() {
 
           <ul className="mt-4 space-y-4">
             {lines.map((line) => (
-              <li key={line.kitId} className="flex items-center gap-3">
+              <li key={line.kitId} className="flex items-start gap-3">
                 <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-white">
                   <Image
                     src={line.kit.img || "/placeholder.svg"}
@@ -239,39 +239,45 @@ export function CheckoutClient() {
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold leading-tight text-foreground">Aquecedor AquaLux Digital</p>
-                  <p className="text-xs text-muted-foreground">{line.kit.units}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold leading-tight text-foreground">Aquecedor AquaLux Digital</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{line.kit.units}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeItem(line.kitId)}
+                      aria-label="Remover item"
+                      className="mt-0.5 shrink-0 text-muted-foreground transition-colors hover:text-destructive"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <div className="flex items-center rounded-lg border border-border">
+                      <button
+                        type="button"
+                        onClick={() => setQty(line.kitId, line.qty - 1)}
+                        aria-label="Diminuir quantidade"
+                        className="inline-flex size-7 items-center justify-center text-brand-navy transition-colors hover:bg-secondary"
+                      >
+                        <Minus className="size-3" />
+                      </button>
+                      <span className="w-6 text-center text-sm font-semibold tabular-nums">{line.qty}</span>
+                      <button
+                        type="button"
+                        onClick={() => setQty(line.kitId, line.qty + 1)}
+                        aria-label="Aumentar quantidade"
+                        className="inline-flex size-7 items-center justify-center text-brand-navy transition-colors hover:bg-secondary"
+                      >
+                        <Plus className="size-3" />
+                      </button>
+                    </div>
+                    <p className="shrink-0 whitespace-nowrap text-right text-sm font-bold text-brand-navy">
+                      R$ {formatBRL(line.lineTotal)}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center rounded-lg border border-border">
-                  <button
-                    type="button"
-                    onClick={() => setQty(line.kitId, line.qty - 1)}
-                    aria-label="Diminuir quantidade"
-                    className="inline-flex size-7 items-center justify-center text-brand-navy transition-colors hover:bg-secondary"
-                  >
-                    <Minus className="size-3" />
-                  </button>
-                  <span className="w-6 text-center text-sm font-semibold tabular-nums">{line.qty}</span>
-                  <button
-                    type="button"
-                    onClick={() => setQty(line.kitId, line.qty + 1)}
-                    aria-label="Aumentar quantidade"
-                    className="inline-flex size-7 items-center justify-center text-brand-navy transition-colors hover:bg-secondary"
-                  >
-                    <Plus className="size-3" />
-                  </button>
-                </div>
-                <p className="shrink-0 whitespace-nowrap text-right text-sm font-bold text-brand-navy">
-                  R$ {formatBRL(line.lineTotal)}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => removeItem(line.kitId)}
-                  aria-label="Remover item"
-                  className="text-muted-foreground transition-colors hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </button>
               </li>
             ))}
           </ul>
