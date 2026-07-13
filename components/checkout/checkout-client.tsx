@@ -986,13 +986,7 @@ function CheckoutFooter() {
         <div className="mt-4">
           <PaymentMethods variant="badges" />
         </div>
-        <Link
-          href="/"
-          className="mt-6 inline-block text-sm font-semibold text-white underline underline-offset-4"
-        >
-          Informações da loja
-        </Link>
-        <p className="mt-4 text-xs font-semibold text-white/80">AquaLux Ltda</p>
+        <p className="mt-6 text-xs font-semibold text-white/80">AquaLux Ltda</p>
         <p className="mt-1 text-xs text-white/60">CNPJ: 04.735.986/0001-07</p>
         <p className="mt-1 text-xs leading-relaxed text-white/60">
           R. Quito do Guaraná, 260 — Lotes 22 e 07 da Qd 14
