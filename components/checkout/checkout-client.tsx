@@ -860,18 +860,6 @@ type Slide =
 
 const SLIDES: Slide[] = [
   {
-    kind: "review",
-    name: "Marcos A.",
-    avatar: "/images/reviews/marcos.png",
-    text: "Instalei em menos de 5 minutos, sem ferramentas. A água sai quente quase imediato e o display digital é muito útil.",
-  },
-  {
-    kind: "review",
-    name: "Fernanda C.",
-    avatar: "/images/reviews/fernanda.png",
-    text: "Resolveu o problema da minha cozinha que não tinha água quente. Qualidade excelente, recomendo demais!",
-  },
-  {
     kind: "trust",
     image: "/images/trust/correios.png",
     title: "Correios",
