@@ -941,7 +941,15 @@ function CheckoutFooter() {
         >
           Informações da loja
         </Link>
-        <p className="mt-3 text-xs text-white/60">AquaLux Ltda | Todos os direitos reservados</p>
+        <p className="mt-4 text-xs font-semibold text-white/80">AquaLux Ltda</p>
+        <p className="mt-1 text-xs text-white/60">CNPJ: 04.735.986/0001-07</p>
+        <p className="mt-1 text-xs leading-relaxed text-white/60">
+          R. Quito do Guaraná, 260 — Lotes 22 e 07 da Qd 14
+          <br />
+          Distrito Municipal Pequeno — Rio Verde/GO, CEP 75910-580
+        </p>
+        <p className="mt-1 text-xs text-white/60">Telefone: (64) 3621-3655</p>
+        <p className="mt-3 text-xs text-white/50">Todos os direitos reservados</p>
       </div>
     </footer>
   )

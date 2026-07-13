@@ -36,7 +36,7 @@ export function SiteFooter() {
           </li>
           <li className="flex items-center gap-2.5">
             <Phone className="size-4 text-primary-foreground/60" />
-            (27) 99988-7436
+            (64) 3621-3655
           </li>
           <li className="flex items-center gap-2.5">
             <Clock className="size-4 text-primary-foreground/60" />
@@ -92,10 +92,11 @@ export function SiteFooter() {
             <Logo variant="light" className="h-10" />
           </div>
           <p className="mt-4 font-heading text-sm font-bold">AquaLux Ltda</p>
+          <p className="mt-1 text-xs text-primary-foreground/60">CNPJ: 04.735.986/0001-07</p>
           <p className="mt-1 text-xs leading-relaxed text-primary-foreground/60">
-            Rua Henry Ford, nº 548
+            R. Quito do Guaraná, 260 — Lotes 22 e 07 da Qd 14
             <br />
-            Osasco — São Paulo/SP, CEP 06210-100
+            Distrito Municipal Pequeno — Rio Verde/GO, CEP 75910-580
           </p>
           <p className="mt-4 text-xs text-primary-foreground/50">
             © {new Date().getFullYear()} AquaLux. Todos os direitos reservados.
