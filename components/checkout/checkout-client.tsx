@@ -17,7 +17,6 @@ import {
   ArrowLeft,
   QrCode,
   Zap,
-  ShieldCheck,
   CircleCheck,
   ShoppingBag,
   Star,
@@ -854,35 +853,29 @@ type Slide =
     }
   | {
       kind: "trust"
-      icon: typeof ShieldCheck
+      image: string
       title: string
       text: string
     }
 
 const SLIDES: Slide[] = [
   {
-    kind: "review",
-    name: "Marcos A.",
-    avatar: "/images/reviews/marcos.png",
-    text: "Instalei em menos de 5 minutos, sem ferramentas. A água sai quente quase imediato e o display digital é muito útil.",
-  },
-  {
-    kind: "review",
-    name: "Fernanda C.",
-    avatar: "/images/reviews/fernanda.png",
-    text: "Resolveu o problema da minha cozinha que não tinha água quente. Qualidade excelente, recomendo demais!",
-  },
-  {
     kind: "trust",
-    icon: Truck,
+    image: "/images/trust/correios.png",
     title: "Correios",
     text: "Trabalhamos com os Correios há mais de 5 anos, garantindo entregas rápidas e seguras para todo o Brasil.",
   },
   {
     kind: "trust",
-    icon: ShieldCheck,
-    title: "Devolução Fácil",
-    text: "30 dias para troca ou devolução, de forma simples, rápida e sem burocracia.",
+    image: "/images/trust/devolucao.png",
+    title: "Devolução Facilitada",
+    text: "30 dias para troca ou devolução de forma simples, rápida e segura.",
+  },
+  {
+    kind: "trust",
+    image: "/images/trust/garantia.png",
+    title: "Compra 100% Segura",
+    text: "Seus dados protegidos durante toda a finalização da compra.",
   },
 ]
 
@@ -955,12 +948,22 @@ function TrustCarousel() {
               </>
             ) : (
               <>
-                <div className="flex items-center justify-between">
-                  <Stars />
-                  <slide.icon className="size-6 text-brand-navy" />
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <Stars />
+                    <p className="mt-2 text-sm font-bold text-foreground">{slide.title}</p>
+                  </div>
+                  <div className="relative size-12 shrink-0">
+                    <Image
+                      src={slide.image || "/placeholder.svg"}
+                      alt={slide.title}
+                      fill
+                      sizes="48px"
+                      className="object-contain"
+                    />
+                  </div>
                 </div>
-                <p className="mt-3 text-sm font-bold text-foreground">{slide.title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{slide.text}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{slide.text}</p>
               </>
             )}
           </article>
