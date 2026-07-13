@@ -278,16 +278,26 @@ export function CheckoutClient() {
 
           {/* Brinde */}
           <div className="mt-4 flex items-center gap-3 rounded-xl border border-dashed border-emerald-400 bg-emerald-50 p-3">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-white">
-              <Gift className="size-6 text-emerald-600" />
+            <span className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-white">
+              <Image
+                src="/images/brinde-adaptadores.png"
+                alt="Kit de adaptadores + bico aerador"
+                fill
+                sizes="56px"
+                className="object-contain p-1"
+              />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold leading-tight text-foreground">Adaptadores universais + arejador</p>
-              <p className="text-xs text-muted-foreground">Incluso grátis no seu pedido</p>
+              <p className="flex items-center gap-1.5 text-xs font-bold uppercase leading-none text-emerald-600">
+                <Gift className="size-3.5" /> Brinde grátis
+              </p>
+              <p className="mt-1 text-sm font-bold leading-tight text-foreground">
+                Kit de adaptadores + bico aerador
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Incluso <span className="font-semibold text-foreground">no</span> seu pedido hoje
+              </p>
             </div>
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold text-white">
-              <Gift className="size-3.5" /> Brinde
-            </span>
           </div>
 
           {/* Cupom */}
