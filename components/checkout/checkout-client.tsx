@@ -22,6 +22,7 @@ import {
   ShoppingBag,
   Star,
   BadgeCheck,
+  Gift,
 } from "lucide-react"
 import { useCart } from "@/components/cart-provider"
 import { Logo } from "@/components/logo"
@@ -207,6 +208,16 @@ export function CheckoutClient() {
     <div className="min-h-screen bg-secondary">
       <CheckoutHeader />
 
+      {/* Banner promocional */}
+      <div className="bg-brand-navy-deep px-4 py-2.5 text-center">
+        <p className="flex items-center justify-center gap-2 text-sm font-semibold text-white">
+          <Truck className="size-4 shrink-0 text-emerald-400" />
+          <span>
+            Você ganhou <span className="font-bold text-emerald-400">FRETE GRÁTIS</span> + Brinde exclusivo hoje!
+          </span>
+        </p>
+      </div>
+
       <div className="mx-auto max-w-md px-4 py-5">
         {/* Resumo do pedido */}
         <section className="rounded-2xl bg-card p-5 shadow-sm">
@@ -250,7 +261,9 @@ export function CheckoutClient() {
                     <Plus className="size-3" />
                   </button>
                 </div>
-                <p className="w-16 text-right text-sm font-bold text-brand-navy">R$ {formatBRL(line.lineTotal)}</p>
+                <p className="shrink-0 whitespace-nowrap text-right text-sm font-bold text-brand-navy">
+                  R$ {formatBRL(line.lineTotal)}
+                </p>
                 <button
                   type="button"
                   onClick={() => removeItem(line.kitId)}
@@ -262,6 +275,20 @@ export function CheckoutClient() {
               </li>
             ))}
           </ul>
+
+          {/* Brinde */}
+          <div className="mt-4 flex items-center gap-3 rounded-xl border border-dashed border-emerald-400 bg-emerald-50 p-3">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-white">
+              <Gift className="size-6 text-emerald-600" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold leading-tight text-foreground">Adaptadores universais + arejador</p>
+              <p className="text-xs text-muted-foreground">Incluso grátis no seu pedido</p>
+            </div>
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-bold text-white">
+              <Gift className="size-3.5" /> Brinde
+            </span>
+          </div>
 
           {/* Cupom */}
           <div className="mt-4 flex items-center gap-2">
@@ -302,7 +329,12 @@ export function CheckoutClient() {
             )}
             {pixDiscount > 0 && (
               <div className="flex justify-between">
-                <dt className="text-emerald-600">Desconto</dt>
+                <dt className="flex items-center gap-1.5 text-emerald-600">
+                  Desconto
+                  <span className="rounded bg-emerald-500 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-white">
+                    Pix
+                  </span>
+                </dt>
                 <dd className="text-emerald-600">- R$ {formatBRL(pixDiscount)}</dd>
               </div>
             )}
@@ -395,17 +427,27 @@ export function CheckoutClient() {
             <div>
               <h3 className="font-heading text-base font-bold text-foreground">Para onde enviamos o seu pedido?</h3>
               <div className="mt-4 space-y-4">
-                <Field label="CEP" error={errors.cep} hint={cepLoading ? "Buscando..." : uf && cidade ? `${uf}/${cidade}` : undefined}>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={cep}
-                    onChange={(e) => setCep(maskCEP(e.target.value))}
-                    onBlur={handleCepBlur}
-                    placeholder="00000-000"
-                    aria-label="CEP"
-                    className={inputClass(errors.cep)}
-                  />
+                <Field label="CEP" error={errors.cep}>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={cep}
+                      onChange={(e) => setCep(maskCEP(e.target.value))}
+                      onBlur={handleCepBlur}
+                      placeholder="00000-000"
+                      aria-label="CEP"
+                      className={cn(inputClass(errors.cep), "flex-1")}
+                    />
+                    {cepLoading ? (
+                      <span className="shrink-0 text-xs font-medium text-muted-foreground">Buscando...</span>
+                    ) : uf && cidade ? (
+                      <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-emerald-600">
+                        <CircleCheck className="size-4" />
+                        {uf}/{cidade}
+                      </span>
+                    ) : null}
+                  </div>
                 </Field>
                 <Field label="Endereço" error={errors.endereco}>
                   <input
@@ -545,14 +587,13 @@ export function CheckoutClient() {
                   type="button"
                   onClick={() => setPayment("card")}
                   className={cn(
-                    "rounded-xl border-2 p-3 text-center transition",
+                    "flex items-center justify-center rounded-xl border-2 p-3 text-center transition",
                     payment === "card" ? "border-brand-navy bg-brand-navy/5" : "border-border",
                   )}
                 >
                   <span className="flex items-center justify-center gap-1.5 font-bold text-foreground">
                     <CreditCard className="size-4" /> Cartão de crédito
                   </span>
-                  <span className="text-xs text-muted-foreground">Em até 12x</span>
                 </button>
               </div>
 
