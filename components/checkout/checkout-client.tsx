@@ -809,7 +809,7 @@ function PrimaryButton({ onClick, children }: { onClick: () => void; children: R
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-navy py-4 font-heading text-base font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
+      className="flex w-full flex-1 items-center justify-center gap-2 rounded-xl bg-brand-navy py-4 font-heading text-base font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
     >
       {children}
     </button>
