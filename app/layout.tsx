@@ -47,6 +47,20 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
 
+        {/* Google tag (gtag.js) - Google Ads */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18273268399"
+          strategy="afterInteractive"
+        />
+        <Script id="google-gtag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18273268399');
+          `}
+        </Script>
+
         {/* Utmify - Pixel do Google */}
         <Script id="utmify-google-pixel" strategy="afterInteractive">
           {`
