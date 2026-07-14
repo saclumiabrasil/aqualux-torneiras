@@ -1,8 +1,16 @@
 "use client"
 
-import { useRef, useState, type ReactNode } from "react"
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react"
 import Image from "next/image"
 import Link from "next/link"
+import Script from "next/script"
 import {
   Lock,
   Tag,
@@ -22,6 +30,9 @@ import {
   Star,
   BadgeCheck,
   Gift,
+  Loader2,
+  Copy,
+  CheckCheck,
 } from "lucide-react"
 import { useCart } from "@/components/cart-provider"
 import { Logo } from "@/components/logo"
@@ -34,8 +45,6 @@ import {
   maskCPF,
   maskPhone,
   maskCEP,
-  maskCard,
-  maskExpiry,
   onlyDigits,
   isValidEmail,
   type ShippingId,
@@ -43,6 +52,18 @@ import {
 import { cn } from "@/lib/utils"
 
 type Step = 0 | 1 | 2
+
+type PixData = {
+  orderId: string
+  qrCode: string | null
+  qrCodeBase64: string | null
+  expiresAt: string | null
+  amountCents: number
+}
+
+export type CardPaymentHandle = {
+  tokenize: () => Promise<string | undefined>
+}
 
 const STEPS = [
   { label: "Identificação", icon: User },
@@ -76,11 +97,13 @@ export function CheckoutClient() {
 
   // Pagamento
   const [payment, setPayment] = useState<"pix" | "card">("pix")
-  const [cardNumber, setCardNumber] = useState("")
-  const [cardName, setCardName] = useState("")
-  const [cardExpiry, setCardExpiry] = useState("")
-  const [cardCvv, setCardCvv] = useState("")
   const [parcelas, setParcelas] = useState("1")
+
+  // Processamento / gateway
+  const [processing, setProcessing] = useState(false)
+  const [paymentError, setPaymentError] = useState("")
+  const [pix, setPix] = useState<PixData | null>(null)
+  const cardRef = useRef<CardPaymentHandle>(null)
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -143,12 +166,6 @@ export function CheckoutClient() {
       if (!bairro.trim()) e.bairro = "Informe o bairro."
       if (!cidade.trim()) e.cidade = "Informe a cidade."
     }
-    if (s === 2 && payment === "card") {
-      if (onlyDigits(cardNumber).length < 13) e.cardNumber = "Número de cartão inválido."
-      if (cardName.trim().length < 3) e.cardName = "Informe o nome impresso no cartão."
-      if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) e.cardExpiry = "Validade inválida."
-      if (onlyDigits(cardCvv).length < 3) e.cardCvv = "CVV inválido."
-    }
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -165,28 +182,120 @@ export function CheckoutClient() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  function finalize() {
-    if (!validateStep(2)) return
-
-    // Google Ads - Evento de conversão (página de pedido concluído)
+  function fireConversion(value: number, orderId: string) {
     if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
       ;(window as any).gtag("event", "conversion", {
         send_to: "AW-18273268399/t4_PCJf2gdAcEK_lr4lE",
-        value: total,
+        value,
         currency: "BRL",
-        transaction_id: `AQ-${Date.now()}`,
+        transaction_id: orderId,
       })
     }
+  }
 
+  function completeOrder(orderId: string) {
+    fireConversion(total, orderId)
     setFinalTotal(total)
     setSubmitted(true)
     clear()
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
+  async function finalize() {
+    if (!validateStep(2)) return
+    setPaymentError("")
+    setProcessing(true)
+
+    try {
+      let cardToken: string | undefined
+      if (payment === "card") {
+        cardToken = await cardRef.current?.tokenize()
+        if (!cardToken) {
+          setPaymentError("Não foi possível validar os dados do cartão. Revise e tente novamente.")
+          setProcessing(false)
+          return
+        }
+      }
+
+      const res = await fetch("/api/checkout/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: lines.map((l) => ({ kitId: l.kitId, qty: l.qty })),
+          couponCode: couponCodeApplied || undefined,
+          shippingId: frete,
+          paymentMethod: payment === "pix" ? "pix" : "credit_card",
+          cardToken,
+          installments: Number(parcelas),
+          customer: { name: nome, email, cpf, phone: celular },
+          shipping: {
+            cep,
+            street: endereco,
+            number: numero,
+            complement: complemento,
+            district: bairro,
+            city: cidade,
+            state: uf,
+          },
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setPaymentError(data?.error || "Não foi possível processar o pagamento. Tente novamente.")
+        setProcessing(false)
+        return
+      }
+
+      if (payment === "pix") {
+        if (!data.pix?.qrCode && !data.pix?.qrCodeBase64) {
+          setPaymentError("Não foi possível gerar o Pix. Tente novamente.")
+          setProcessing(false)
+          return
+        }
+        setPix({
+          orderId: data.orderId,
+          qrCode: data.pix?.qrCode ?? null,
+          qrCodeBase64: data.pix?.qrCodeBase64 ?? null,
+          expiresAt: data.pix?.expiresAt ?? null,
+          amountCents: data.totalCents,
+        })
+        setProcessing(false)
+        window.scrollTo({ top: 0, behavior: "smooth" })
+        return
+      }
+
+      // Cartão
+      if (data.status === "paid") {
+        completeOrder(data.orderId)
+      } else if (data.status === "pending") {
+        setPaymentError("Pagamento em análise. Assim que aprovado, você receberá a confirmação por e-mail.")
+        setProcessing(false)
+      } else {
+        setPaymentError("Pagamento não aprovado. Tente outro cartão ou use Pix.")
+        setProcessing(false)
+      }
+    } catch {
+      setPaymentError("Erro de conexão. Verifique sua internet e tente novamente.")
+      setProcessing(false)
+    }
+  }
+
   // Pedido concluído
   if (submitted) {
     return <OrderConfirmation nome={nome} email={email} payment={payment} total={finalTotal} />
+  }
+
+  // Pagamento via Pix (aguardando confirmação)
+  if (pix) {
+    return (
+      <PixPayment
+        pix={pix}
+        onPaid={() => completeOrder(pix.orderId)}
+        onCancel={() => setPix(null)}
+      />
+    )
   }
 
   // Aguardando hidratação do carrinho
@@ -642,51 +751,7 @@ export function CheckoutClient() {
                 </div>
               ) : (
                 <div className="mt-4 space-y-4">
-                  <Field label="Número do cartão" error={errors.cardNumber}>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(maskCard(e.target.value))}
-                      placeholder="0000 0000 0000 0000"
-                      aria-label="Número do cartão"
-                      className={inputClass(errors.cardNumber)}
-                    />
-                  </Field>
-                  <Field label="Nome impresso no cartão" error={errors.cardName}>
-                    <input
-                      type="text"
-                      value={cardName}
-                      onChange={(e) => setCardName(e.target.value)}
-                      placeholder="Como está no cartão"
-                      aria-label="Nome impresso no cartão"
-                      className={inputClass(errors.cardName)}
-                    />
-                  </Field>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Field label="Validade" error={errors.cardExpiry}>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={cardExpiry}
-                        onChange={(e) => setCardExpiry(maskExpiry(e.target.value))}
-                        placeholder="MM/AA"
-                        aria-label="Validade"
-                        className={inputClass(errors.cardExpiry)}
-                      />
-                    </Field>
-                    <Field label="CVV" error={errors.cardCvv}>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={cardCvv}
-                        onChange={(e) => setCardCvv(onlyDigits(e.target.value).slice(0, 4))}
-                        placeholder="000"
-                        aria-label="CVV"
-                        className={inputClass(errors.cardCvv)}
-                      />
-                    </Field>
-                  </div>
+                  <CardPaymentElement ref={cardRef} />
                   <Field label="Parcelas">
                     <select
                       value={parcelas}
@@ -709,10 +774,27 @@ export function CheckoutClient() {
                 </div>
               )}
 
+              {paymentError && (
+                <p
+                  role="alert"
+                  className="mt-4 rounded-xl bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive"
+                >
+                  {paymentError}
+                </p>
+              )}
+
               <div className="mt-5 flex items-center gap-3">
                 <BackButton onClick={goBack} />
-                <PrimaryButton onClick={finalize}>
-                  <Lock className="size-4" /> Finalizar Pedido
+                <PrimaryButton onClick={finalize} disabled={processing}>
+                  {processing ? (
+                    <>
+                      <Loader2 className="size-5 animate-spin" /> Processando...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="size-4" /> {payment === "pix" ? "Gerar Pix" : "Finalizar Pedido"}
+                    </>
+                  )}
                 </PrimaryButton>
               </div>
             </div>
@@ -830,12 +912,21 @@ function inputClass(error?: string) {
   )
 }
 
-function PrimaryButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+function PrimaryButton({
+  onClick,
+  children,
+  disabled,
+}: {
+  onClick: () => void
+  children: ReactNode
+  disabled?: boolean
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full flex-1 items-center justify-center gap-2 rounded-xl bg-brand-navy py-4 font-heading text-base font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110"
+      disabled={disabled}
+      className="flex w-full flex-1 items-center justify-center gap-2 rounded-xl bg-brand-navy py-4 font-heading text-base font-bold text-white shadow-lg shadow-brand-navy/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {children}
     </button>
@@ -854,6 +945,231 @@ function BackButton({ onClick }: { onClick: () => void }) {
     </button>
   )
 }
+
+function PixPayment({
+  pix,
+  onPaid,
+  onCancel,
+}: {
+  pix: PixData
+  onPaid: () => void
+  onCancel: () => void
+}) {
+  const [copied, setCopied] = useState(false)
+  const [checking, setChecking] = useState(true)
+
+  // Polling do status do pedido até confirmar o pagamento.
+  useEffect(() => {
+    let active = true
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/checkout/status?orderId=${pix.orderId}`, {
+          cache: "no-store",
+        })
+        const data = await res.json()
+        if (!active) return
+        if (data.status === "paid") {
+          clearInterval(interval)
+          onPaid()
+        } else if (["failed", "canceled", "refunded"].includes(data.status)) {
+          clearInterval(interval)
+          setChecking(false)
+        }
+      } catch {
+        // tenta novamente no próximo ciclo
+      }
+    }, 4000)
+    return () => {
+      active = false
+      clearInterval(interval)
+    }
+  }, [pix.orderId, onPaid])
+
+  async function copyCode() {
+    if (!pix.qrCode) return
+    try {
+      await navigator.clipboard.writeText(pix.qrCode)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      // ignora
+    }
+  }
+
+  const qrSrc = pix.qrCodeBase64
+    ? pix.qrCodeBase64.startsWith("data:")
+      ? pix.qrCodeBase64
+      : `data:image/png;base64,${pix.qrCodeBase64}`
+    : null
+
+  return (
+    <div className="min-h-screen bg-secondary">
+      <CheckoutHeader />
+      <div className="mx-auto max-w-md px-4 py-8">
+        <div className="rounded-2xl bg-background p-6 shadow-sm">
+          <div className="flex flex-col items-center text-center">
+            <span className="flex size-12 items-center justify-center rounded-full bg-brand-navy/10">
+              <QrCode className="size-6 text-brand-navy" />
+            </span>
+            <h1 className="mt-3 font-heading text-xl font-bold text-foreground text-balance">
+              Pague R$ {formatBRL(pix.amountCents / 100)} com Pix
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground text-pretty">
+              Escaneie o QR Code no app do seu banco ou use o código copia-e-cola. A confirmação é automática.
+            </p>
+          </div>
+
+          {qrSrc && (
+            <div className="mt-6 flex justify-center">
+              <div className="rounded-xl border border-border bg-white p-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qrSrc || "/placeholder.svg"} alt="QR Code Pix" className="size-52" />
+              </div>
+            </div>
+          )}
+
+          {pix.qrCode && (
+            <div className="mt-6">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Pix copia e cola
+              </p>
+              <div className="mt-2 flex items-stretch gap-2">
+                <p className="min-w-0 flex-1 truncate rounded-xl border border-border bg-secondary px-3 py-3 text-xs text-foreground/80">
+                  {pix.qrCode}
+                </p>
+                <button
+                  type="button"
+                  onClick={copyCode}
+                  aria-label="Copiar código Pix"
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-brand-navy px-4 text-sm font-bold text-white transition hover:brightness-110"
+                >
+                  {copied ? <CheckCheck className="size-4" /> : <Copy className="size-4" />}
+                  {copied ? "Copiado" : "Copiar"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm text-foreground/80">
+            {checking ? (
+              <>
+                <Loader2 className="size-4 animate-spin text-brand-navy" />
+                Aguardando confirmação do pagamento...
+              </>
+            ) : (
+              <span className="text-destructive">
+                Pagamento não confirmado. Gere um novo Pix para tentar novamente.
+              </span>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={onCancel}
+            className="mt-4 w-full text-center text-sm font-semibold text-muted-foreground underline underline-offset-4"
+          >
+            Voltar e escolher outra forma de pagamento
+          </button>
+        </div>
+      </div>
+      <CheckoutFooter />
+    </div>
+  )
+}
+
+const CardPaymentElement = forwardRef<CardPaymentHandle>(function CardPaymentElement(_props, ref) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const elementsRef = useRef<any>(null)
+  const cardRef = useRef<any>(null)
+  const [ready, setReady] = useState(false)
+  const [scriptLoaded, setScriptLoaded] = useState(false)
+
+  const publicKey = process.env.NEXT_PUBLIC_PAGOU_PUBLISHABLE_KEY
+
+  useEffect(() => {
+    if (!scriptLoaded) return
+    const Pagou = (window as any).Pagou
+    if (!Pagou || !publicKey || !containerRef.current) return
+    try {
+      const elements = Pagou.elements({ publicKey })
+      const card = elements.create("card")
+      card.mount(containerRef.current)
+      elementsRef.current = elements
+      cardRef.current = card
+      // Alguns SDKs emitem "ready"/"change"; habilitamos assim que montar.
+      if (typeof card.on === "function") {
+        card.on("ready", () => setReady(true))
+      } else {
+        setReady(true)
+      }
+      // fallback caso o evento "ready" não dispare
+      const t = setTimeout(() => setReady(true), 1200)
+      return () => clearTimeout(t)
+    } catch (err) {
+      console.log("[v0] Falha ao inicializar Payment Element:", err)
+    }
+  }, [scriptLoaded, publicKey])
+
+  useImperativeHandle(ref, () => ({
+    async tokenize() {
+      const elements = elementsRef.current
+      const card = cardRef.current
+      if (!elements && !card) return undefined
+      try {
+        // Padrão documentado: elements.submit() retorna { token }
+        if (elements && typeof elements.submit === "function") {
+          const result = await elements.submit()
+          return result?.token ?? result?.data?.token ?? result?.id
+        }
+        // Alternativas defensivas conforme a versão do SDK
+        if (card && typeof card.createToken === "function") {
+          const result = await card.createToken()
+          return result?.token ?? result?.id
+        }
+        if (elements && typeof elements.createToken === "function") {
+          const result = await elements.createToken()
+          return result?.token ?? result?.id
+        }
+      } catch (err) {
+        console.log("[v0] Falha ao tokenizar cartão:", err)
+        return undefined
+      }
+      return undefined
+    },
+  }))
+
+  if (!publicKey) {
+    return (
+      <p className="rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        Pagamento com cartão indisponível: chave do PagouAI não configurada.
+      </p>
+    )
+  }
+
+  return (
+    <>
+      <Script
+        src="https://js.pagou.ai/payments/v3.js"
+        strategy="afterInteractive"
+        onLoad={() => setScriptLoaded(true)}
+      />
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Dados do cartão
+        </p>
+        <div
+          ref={containerRef}
+          className="min-h-14 rounded-xl border border-border bg-background px-3 py-3"
+        />
+        {!ready && (
+          <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="size-3.5 animate-spin" /> Carregando pagamento seguro...
+          </p>
+        )}
+      </div>
+    </>
+  )
+})
 
 type Slide =
   | {
