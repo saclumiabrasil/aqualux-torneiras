@@ -167,6 +167,17 @@ export function CheckoutClient() {
 
   function finalize() {
     if (!validateStep(2)) return
+
+    // Google Ads - Evento de conversão (página de pedido concluído)
+    if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+      ;(window as any).gtag("event", "conversion", {
+        send_to: "AW-18273268399/t4_PCJf2gdAcEK_lr4lE",
+        value: total,
+        currency: "BRL",
+        transaction_id: `AQ-${Date.now()}`,
+      })
+    }
+
     setFinalTotal(total)
     setSubmitted(true)
     clear()

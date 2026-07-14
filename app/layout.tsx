@@ -47,7 +47,7 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
 
-        {/* Google tag (gtag.js) */}
+        {/* Google tag (gtag.js) - Google Ads */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18273268399"
           strategy="afterInteractive"
@@ -61,6 +61,18 @@ export default function RootLayout({
           `}
         </Script>
 
+        {/* Utmify - Pixel do Google */}
+        <Script id="utmify-google-pixel" strategy="afterInteractive">
+          {`
+            window.googlePixelId = "6a55bd19cc1734df0dda7a11";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
+
         {/* Utmify - Script de UTMs */}
         <Script
           src="https://cdn.utmify.com.br/scripts/utms/latest.js"
@@ -68,18 +80,6 @@ export default function RootLayout({
           data-utmify-prevent-subids=""
           strategy="afterInteractive"
         />
-
-        {/* Utmify - Pixel de rastreamento de vendas */}
-        <Script id="utmify-pixel" strategy="afterInteractive">
-          {`
-            window.pixelId = "6a4708779f6cfb5229ae436b";
-            var a = document.createElement("script");
-            a.setAttribute("async", "");
-            a.setAttribute("defer", "");
-            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-            document.head.appendChild(a);
-          `}
-        </Script>
       </body>
     </html>
   )
